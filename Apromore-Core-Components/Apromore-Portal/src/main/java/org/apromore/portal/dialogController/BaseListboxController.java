@@ -27,6 +27,7 @@ package org.apromore.portal.dialogController;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -67,6 +68,7 @@ import org.zkoss.zul.Listhead;
 import org.zkoss.zul.ListitemRenderer;
 import org.zkoss.zul.Messagebox;
 import org.zkoss.zul.Paging;
+import org.zkoss.zul.Window;
 
 public abstract class BaseListboxController extends BaseController {
 
@@ -100,6 +102,7 @@ public abstract class BaseListboxController extends BaseController {
     private final Button btnTileView;
     private final Button btnSecurity;
     private final Button btnUserMgmt;
+    private final Button btnShare;
 
     private PortalContext portalContext;
     private Map<String, PortalPlugin> portalPluginMap;
@@ -138,6 +141,7 @@ public abstract class BaseListboxController extends BaseController {
         btnTileView = (Button) mainController.getFellow("btnTileView");
         btnSecurity = (Button) mainController.getFellow("btnSecurity");
         btnUserMgmt = (Button) mainController.getFellow("btnUserMgmt");
+        btnShare = (Button) mainController.getFellow("btnShare");
 
         attachEvents();
 
@@ -283,6 +287,13 @@ public abstract class BaseListboxController extends BaseController {
             }
         });
 
+        this.btnShare.addEventListener("onClick", new EventListener<Event>() {
+            @Override
+            public void onEvent(Event event) throws Exception {
+                share();
+            }
+        });
+
     }
 
     public void setTileView(boolean tileOn) {
@@ -420,6 +431,28 @@ public abstract class BaseListboxController extends BaseController {
                 renameFolder();
             }
         } catch (DialogException e) {
+            Messagebox.show(e.getMessage(), "Attention", Messagebox.OK, Messagebox.ERROR);
+        }
+    }
+
+    protected void share() {
+        try {
+            if (getSelectionCount() == 0) {
+                Messagebox.show("Please select a file/folder to share", "Attention", Messagebox.OK, Messagebox.ERROR);
+                return;
+            } else if (getSelectionCount() > 1) {
+                Messagebox.show("You can not share multiple selections", "Attention", Messagebox.OK, Messagebox.ERROR);
+                return;
+            }
+            Object selectedItem = getSelection().iterator().next();
+            Map arg = new HashMap<>();
+            arg.put("portalContext", portalContext);
+            arg.put("selectedItem", selectedItem);
+            arg.put("mainController", mainController);
+            arg.put("currentUser", UserSessionManager.getCurrentUser());
+            Window window = (Window) Executions.getCurrent().createComponents("macros/share.zul", null, arg);
+            window.doModal();
+        } catch (Exception e) {
             Messagebox.show(e.getMessage(), "Attention", Messagebox.OK, Messagebox.ERROR);
         }
     }
