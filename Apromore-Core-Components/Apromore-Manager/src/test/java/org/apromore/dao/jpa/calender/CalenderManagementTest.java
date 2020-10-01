@@ -24,12 +24,14 @@ package org.apromore.dao.jpa.calender;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.OffsetTime;
 import java.time.ZoneOffset;
 
 import org.apromore.BaseTestClass;
 import org.apromore.dao.CustomCalenderRepository;
 import org.apromore.dao.model.CustomCalender;
+import org.apromore.dao.model.Holiday;
 import org.apromore.dao.model.WorkDay;
 import org.assertj.core.api.Condition;
 import org.junit.Test;
@@ -150,6 +152,26 @@ public class CalenderManagementTest extends BaseTestClass {
 
 		assertThat(calenderExpected.getWorkDays()).filteredOn(workDaysFilter).extracting("isWorkingDay", Boolean.class)
 				.containsOnly(false);
+	}
+	
+	@Test
+	public void testAddCustomCalenderWithHoliday() {
+//		Given
+		CustomCalender calenderToSave = new CustomCalender("Test Calender Holiday Day");
+//		customCal.saveAndFlush(calenderToSave);
+
+		LocalDate holidayDate = LocalDate.now();
+		Holiday holiday=new Holiday("TestName", "TestDesc", holidayDate);
+		calenderToSave.addHoliday(holiday);
+
+//		When
+		CustomCalender calenderExpected = customCal.saveAndFlush(calenderToSave);
+
+//		Then
+		assertThat(calenderExpected.getId()).isNotNull();
+		assertThat(calenderExpected.getHolidays().get(0).getId()).isNotNull();
+		assertThat(calenderExpected.getHolidays().get(0).getLocalDateHolidayDate()).isEqualTo(holidayDate);
+
 	}
 
 }

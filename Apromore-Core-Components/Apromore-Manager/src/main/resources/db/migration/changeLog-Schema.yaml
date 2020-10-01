@@ -400,3 +400,63 @@ databaseChangeLog:
          initiallyDeferred:  false   
          tableName:  work_day
          validate:  true
+         
+      - createTable:
+           tableName: holiday
+           columns: 
+             - column:
+                  name: id
+                  type: BIGINT  
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_holiday_id
+                    
+             - column:
+                constraints:
+                   nullable: true
+                name: created_by
+                type: VARCHAR(100)
+                remarks: 'created_by time for the holiday'
+             
+             - column:
+                constraints:
+                   nullable: true
+                name: updated_by
+                type: VARCHAR(100)
+                remarks: 'updated_by for the holiday'   
+                
+             - column:                
+                constraints:
+                   nullable: false
+                   referencedTableName: custom_calender
+                   referencedColumnNames: id
+                   foreignKeyName: fk_holiday_custom_calender_idk
+                   deleteCascade: true
+                name: calender_id
+                type: BIGINT 
+                
+             - column:
+                constraints:
+                   nullable: false
+                name: name
+                type: VARCHAR(100)
+               
+             - column:
+                constraints:
+                   nullable: true
+                name: description
+                type: VARCHAR(100)
+                
+             - column:
+                constraints:
+                   nullable: false
+                name: holiday_date
+                type: VARCHAR(20)
+                
+             - column:
+                constraints:
+                   nullable: true
+                name: reference_id
+                type: BIGINT         

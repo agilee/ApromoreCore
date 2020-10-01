@@ -66,6 +66,7 @@ public class CustomCalender implements Serializable {
 	private OffsetDateTime updateOffsetDateTime;
 
 	private List<WorkDay> workDays = new ArrayList<WorkDay>();
+	private List<Holiday> holidays = new ArrayList<Holiday>();
 
 	public CustomCalender(String description) {
 		this.description = description;
@@ -144,7 +145,8 @@ public class CustomCalender implements Serializable {
 	public List<WorkDay> getWorkDays() {
 		return workDays;
 	}
-
+	
+	
 	public void setWorkDays(List<WorkDay> workDays) {
 		this.workDays = workDays;
 	}
@@ -158,5 +160,26 @@ public class CustomCalender implements Serializable {
 		workDays.remove(workDay);
 		workDay.setCustomCalender(null);
 	}
+	
+	public void addHoliday(Holiday holiday) {
+		holidays.add(holiday);
+		holiday.setCustomCalender(this);
+	}
+
+	public void removeHoliday(Holiday holiday) {
+		holidays.remove(holiday);
+		holiday.setCustomCalender(null);
+	}
+
+	@OneToMany(mappedBy = "customCalender", cascade = CascadeType.ALL, orphanRemoval = true)
+	public List<Holiday> getHolidays() {
+		return holidays;
+	}
+
+	public void setHolidays(List<Holiday> holidays) {
+		this.holidays = holidays;
+	}
+	
+	
 
 }
